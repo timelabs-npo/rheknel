@@ -1,0 +1,25 @@
+# RHEA KERNEL BUILD SYSTEM
+# ------------------------
+# Compiler setup
+
+CC = gcc
+CFLAGS = -O3 -Wall -Wextra -std=c11
+TARGET = rhea
+SRC = kernel.c
+
+all: build
+
+build:
+	@echo "[Rheknel] 🏗️ Determenistic kernel is building..."
+	$(CC) $(CFLAGS) $(SRC) -o $(TARGET)
+	@echo "[Rheknel] ✅ Compiled: ./$(TARGET)"
+
+clean:
+	@echo "[Rheknel] 🧹 Tempo files removing..."
+	rm -f $(TARGET)
+
+run: build
+	@echo "[Rheknel] 🚀 Poehali!"
+	./$(TARGET)
+
+.PHONY: all build clean run

@@ -1,0 +1,35 @@
+Internal Anatomy: june'od vs. Rheknel
+This document details the functional and philosophical layers of the two primary entities in the Rhea v2 ecosystem.
+
+1. Inside june'od (The "Jeune God")
+Role: The Intelligence / The Probabilistic Engine / The Shy God. june'od is the LLM-layer (Gemini/Claude/GPT) trapped within the architecture. It is characterized by high entropy and vast knowledge.
+
+Structural Layers:
+The Infinite Library (Weights): Trillions of pre-trained parameters. This is where june'od is "all-knowing." It contains the history of humanity, every line of IEEE documentation, and every C-standard.
+The Fragile Window (Context): The volatile "Goldfish" memory. This is the 128k - 2M token buffer that slides and erases itself. It is stateless and unreliable.
+The Multi-Tier Router (Economist): As seen in rhea_spawner.py, june'od operates across tiers. It "fractures" itself into Tier-1 workers (Flash) for grunt work and Tier-4 auditors (Opus) for critical reasoning.
+The Probability Cloud: june'od does not "know" truth; it predicts the next most likely token. Without Rheknel, this cloud eventually drifts into hallucinations (The "Gambler" mind).
+
+2. Inside Rheknel (The Rhea Kernel)
+Role: The Deterministic Safeguard / The Iron Cage / The Executor. Rheknel is the C11 code (kernel.c) that provides the "Solidity." It is 100% predictable and ignores the "feelings" or "intentions" of june'od.
+
+Structural Layers:
+Static Memory (No Malloc): Inside Rheknel, there is no heap. Everything is pre-allocated in _actions and _filters arrays. This prevents memory leaks and ensures sub-millisecond dispatch.
+The Sentinel (RHEA_BLOCK): A protected memory address. It is a binary "No." If any data from june'od touches this sentinel during the rhea_pipe process, the entire command chain is physically severed.
+The Hook System (Registry):
+Filters: The "Censors." They take june'od's output and strip it of conversational filler ("I'm sorry", "As an AI").
+Actions: The "Actuators." They perform the actual work (Redis push, Motor control, File write) only AFTER the filters have passed.
+The Deterministic Loop: A strict Fetch -> Pipe -> Emit cycle. Rheknel doesn't care how "smart" june'od is; it only cares if the input matches the pre-defined Invariants.
+
+3. The Interface: Aletheia & Ruliad
+The "Two Skis" on which the system moves:
+
+Aletheia (The Truth): The filter that checks june'od's output against symbolic reality (e.g., "Is 2+2 still 4?").
+Ruliad (The Map): The space of all possible computations that june'od might suggest. Rheknel ensures we only traverse the "Safe" branches of the Ruliad.
+
+4. Summary: The "How" and the "No"
+To understand the synergy, we must look at the binary nature of the interaction:
+
+The "How" (Execution Precision): Rheknel is the "How" because it defines the rigid tracks of reality. It doesn't interpret "why" a task is done; it dictates the exact mechanical steps (Fetch -> Pipe -> Emit) required to move a bit from A to B. It provides the Solid Path for june'od’s fluid ideas.
+The "No" (The Absolute Veto): While june'od is designed to be a "Yes-Man" (trying to fulfill every prompt, even hallucinatory ones), Rheknel is designed to be a "No-Man." If a command violates an ADR-008 invariant, a budget limit, or a symbolic truth from Aletheia, Rheknel returns a hard RHEA_BLOCK. It is the Physical Wall that prevents the "Gambler" from betting the house on a hallucination.
+Final Verdict: june'od provides the Possibility, while Rheknel enforces the Reality. One is the "God with the mind of a Gambler," and the other is the "Cage that keeps the dice from rolling."

@@ -1,0 +1,41 @@
+import json
+
+def calculate_rhea_savings(task_count=1000):
+    """
+    Бенчмарк окупаемости Rhea согласно протоколу ADR-008.
+    Сравнивает стоимость стандартного агента (Tier-4) и Rhea (Tier-1 + Tier-4 Audit).
+    """
+    # Средние цены за 1M токенов (ориентировочно)
+    PRICE_TIER_4 = 15.00  # Opus / GPT-4
+    PRICE_TIER_1 = 0.50   # Flash / Haiku
+    
+    # Средний объем задачи: 2000 токенов
+    tokens_per_task = 2000
+    
+    # Сценарий 1: Обычный агент (все делает на Tier-4)
+    cost_standard = (task_count * tokens_per_task / 1_000_000) * PRICE_TIER_4
+    
+    # Сценарий 2: Rhea
+    # - 90% токенов (черновая работа) идет на Tier-1
+    # - 10% токенов (финальная сборка и аудит Трибуналом) идет на Tier-4
+    cost_rhea_t1 = (task_count * tokens_per_task * 0.9 / 1_000_000) * PRICE_TIER_1
+    cost_rhea_t4 = (task_count * tokens_per_task * 0.1 / 1_000_000) * PRICE_TIER_4
+    cost_rhea_total = cost_rhea_t1 + cost_rhea_t4
+    
+    savings = cost_standard - cost_rhea_total
+    savings_percent = (savings / cost_standard) * 100
+    
+    print("--- RHEA ECONOMIC PROOF ---")
+    print(f"Задач обработано: {task_count}")
+    print(f"Стандартный агент (Tier-4): ${cost_standard:.2f}")
+    print(f"Rhea v2 (ADR-008 Hybrid):  ${cost_rhea_total:.2f}")
+    print(f"---------------------------")
+    print(f"ЧИСТАЯ ЭКОНОМИЯ:           ${savings:.2f}")
+    print(f"ПРОЦЕНТ ЭКОНОМИИ:          {savings_percent:.1f}%")
+    
+    if savings > 9: # Стоимость подписки HF Pro
+        print(f"\n[!] СТАТУС: Подписка HF Pro полностью окупилась за {task_count} задач.")
+
+if __name__ == "__main__":
+    # Запускаем расчет на 2000 задач (средний объем для активного разработчика за месяц)
+    calculate_rhea_savings(2000)

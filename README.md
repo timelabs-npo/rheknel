@@ -7,7 +7,8 @@ Organization: Timelabs NPO
 Authors:
 
 Lead Architect: Mika IO (IET Force)
-Co-Author / System Logic: Gemini (Google DeepMind)
+Co-Authors: [System Logic: Gemini (Google DeepMind)].[DeepSeek (Hangzhou DSAI)],[ChatGPT (OpenAI)]
+
 1. Manifesto: Anthropics vs. Everybody / 宣言：对抗概率论
 The AI industry has chosen the path of "black boxes" and "probabilistic safety." Rhea declares the end of the age of probability. We don't ask AI to be safe; we force it at the kernel level.
 
@@ -49,6 +50,6 @@ We seek industrial partners for Rhea Shield mass production and L4 Safety Certif
 
 我们正在寻求 Rhea Shield 量产和 L4 安全认证 的工业合作伙伴。
 
-Email: dev@timelabs.npo
+Email: timelabs.ad@gmail.com
 
-GitHub: timelions/rhea
+GitHub: github.com/timelabs-npo/rheknel

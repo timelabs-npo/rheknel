@@ -19,7 +19,7 @@
   },
   "host_receipt": {
     "path": "artifacts/omnia-bus-v1/receipts/macos-arm64-host.log",
-    "sha256": "f858f5d4b245e8413f7e0c4f84dbaa86f3afbee08509d1d32ad7ff6d247b1155"
+    "sha256": "d98e258d9c45c0d3afb71cee3a9a27fc2483f8b368e7f9b5abae7ce83024d135"
   },
   "openbsd_live": "PENDING_EXTERNAL_CI",
   "mbsd_target_observed": "OpenWrt 23.05.4 Linux MT7981; not OpenBSD"

@@ -68,11 +68,13 @@ bool rhea_on(const char *tag, ActionFunc callback) {
     }
     index = find_action(tag);
     if (index < 0) {
+        size_t length;
         if (action_tags_count >= RHEA_MAX_TAGS) {
             return false;
         }
         index = (int)action_tags_count++;
-        (void)strcpy(actions[index].tag, tag);
+        length = strlen(tag);
+        memcpy(actions[index].tag, tag, length + 1u);
     }
     if (actions[index].count >= RHEA_MAX_CALLBACKS) {
         return false;
@@ -88,11 +90,13 @@ bool rhea_add_judge(const char *tag, JudgeFunc callback) {
     }
     index = find_judge(tag);
     if (index < 0) {
+        size_t length;
         if (judge_tags_count >= RHEA_MAX_TAGS) {
             return false;
         }
         index = (int)judge_tags_count++;
-        (void)strcpy(judges[index].tag, tag);
+        length = strlen(tag);
+        memcpy(judges[index].tag, tag, length + 1u);
     }
     if (judges[index].count >= RHEA_MAX_CALLBACKS) {
         return false;

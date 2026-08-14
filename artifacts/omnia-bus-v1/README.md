@@ -6,4 +6,4 @@
 
 Producer commit: `timelabs-npo/omnia-playbook@7a233147423dd350fcdcc8aa2709c0091df5bb02`.
 
-Current measured host artifacts are not committed as binaries: the static library was 15,816 bytes and the host CLI was 35,736 bytes. Those sizes are macOS arm64 observations, not cross-platform invariants.
+Current measured host artifacts are not committed as binaries: the static library was 15,848 bytes and the host CLI was 35,672 bytes. Those sizes are macOS arm64 observations, not cross-platform invariants.

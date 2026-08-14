@@ -1,55 +1,57 @@
-RHEA v2: The Invariant Kernel / 不变式内核
-Rhea is an ultra-lightweight (< 2KB) deterministic event-driven kernel written in C, designed for managing AI agents in extreme resource-constrained environments where security and logic invariants are non-negotiable.
+# Rheknel
 
-🏛️ Organization & Credits / 机构与致谢
-Organization: Timelabs NPO
+Rheknel is a fixed-capacity, fail-closed C99 dispatch kernel plus an allocation-free consumer for Omnia's compact invariant/check bundle.
 
-Authors:
+The integration boundary is deliberately direct:
 
-Lead Architect: Mika IO (IET Force)
-Co-Authors: [System Logic: Gemini (Google DeepMind)].[DeepSeek (Hangzhou DSAI)],[ChatGPT (OpenAI)]
+```text
+Omnia YAML/JSON + assurance metadata
+                ↓ deterministic compiler
+          OMNA binary ABI 1.0
+                ↓ zero-copy validation
+          Rheknel deterministic judge
+                ↓
+       OK / REJECT / ESCALATE / ERROR
+                ↓ only OK reaches action
+```
 
-1. Manifesto: Anthropics vs. Everybody / 宣言：对抗概率论
-The AI industry has chosen the path of "black boxes" and "probabilistic safety." Rhea declares the end of the age of probability. We don't ask AI to be safe; we force it at the kernel level.
+There is no RPC service, daemon, broker, natural-language authority, or extra coordination component.
 
-AI 行业选择了“黑盒”和“概率安全”的道路。Rhea 宣告概率时代的终结。我们不要求 AI 保持安全；我们通过内核级别强制其实施安全。
+## What is implemented
 
-2. Engineering Solidity / 工程可靠性 (IEEE DATE 2025)
-The project follows the principles of Trustworthy Co-Design (IEEE 10992986):
+- exact-version ABI 1.0 with strict rejection of every other version or unknown flag;
+- frame and source SHA-256, evidence IDs, provenance IDs, and deterministic freshness evaluation from caller-supplied epoch seconds;
+- compact exact encodings for states, kinds, integers, strings, arrays, and maps; floats are rejected rather than rounded;
+- consistency, applicability, verifiability, and reliability state handling with explicit verdict mapping;
+- allocation-free, endian-independent parsing with checked offsets, canonical ULEB128, UTF-8 validation, depth/size/count limits, and duplicate-ID contradiction detection;
+- fail-closed dispatch: unknown judges, malformed typed input, unsupported ABI, stale data, and direct `rhea_emit()` cannot run actions;
+- portable C99 build/test path and an OpenBSD path that uses `pledge(2)` in the CLI;
+- embedded C-header fixture and binary-file consumption paths.
 
-Hardware-Software Co-Design: Built for RISC-V/ESP32 execution.
-Deterministic Event Bus: Separation of Actions and Filters for 100% predictability.
-Zero-Allocation Policy: No heap, no malloc, zero memory leaks.
-该项目遵循 Trustworthy Co-Design 原则 (IEEE 10992986)：
+The normative encoding and loss guarantees are in [`docs/OMNIA_RHEKNEL_ABI.md`](docs/OMNIA_RHEKNEL_ABI.md). Omnia owns the compiler and source fixtures in its separate repository; the byte-identical test vectors here pin the consumer boundary.
 
-软硬件协同设计：专为 RISC-V/ESP32 执行而构建。
-确定性事件总线：动作与过滤器的分离，实现 100% 的可预测性。
-零分配策略：无堆空间，无 malloc，零内存泄漏。
-3. Actuality & Autonomy / 现状与自主权
-AI Silicon: The software heart for open-source AI chips.
+## Build and test
 
-Computational Irreducibility: We enforce a "Tribunal" at every cycle instead of predicting hallucinations.
+```sh
+make test
+make sanitize
+make embed-check
+```
 
-L4 Autonomy: A hardware-level kill-switch for autonomous heavy machinery.
+Run the host CLI with an explicit clock input:
 
-AI 芯片：开源 AI 芯片的软件核心。
+```sh
+./build/rhea tests/fixtures/omnia-dns-macos.omnb 1786665600
+```
 
-计算不可约性：我们在每个周期执行“法庭”机制，而不是预测幻觉。
+The golden result is `OK` with one action. At `1789257601` the same artifact is stale, returns `ESCALATE`, and executes zero actions.
 
-L4 自主：自主重型机械的硬件级切断开关。
+`make openbsd-test` is dependency-light and uses the platform `cc`; GitHub CI also executes it inside a pinned OpenBSD VM. A successful cross-compile or static analysis is not described as a live OpenBSD run—see [`docs/PORTABILITY.md`](docs/PORTABILITY.md).
 
-4. Technical Spec / 技术规格
-Language: Pure C (C99).
+## MBSD boundary
 
-Memory: < 2KB static footprint.
+`timelabs-npo/mbsd@a970e76ee41104e80aea8a1782a8053da2a3e116` identifies MBSD as OpenWrt 23.05.4/Linux on MediaTek MT7981 and records its prior OpenBSD direction as superseded. Rheknel therefore does not invent an MBSD/OpenBSD target. An MBSD claim requires an actual OpenWrt SDK/toolchain build and remains separate from OpenBSD verification.
 
-Architecture: Hook-based (Action/Filter Dispatcher).
+## Safety boundary
 
-🤝 Support & Contact / 支持与联系
-We seek industrial partners for Rhea Shield mass production and L4 Safety Certification.
-
-我们正在寻求 Rhea Shield 量产和 L4 安全认证 的工业合作伙伴。
-
-Email: timelabs.ad@gmail.com
-
-GitHub: github.com/timelabs-npo/rheknel
+Rheknel evaluates already-typed data. It does not prove source truth, execute Omnia checks, grant mutation authority from text, or make stale/missing evidence current. The fixed registries are process-global and not thread-safe; callers must serialize registration/dispatch or wrap instances externally.

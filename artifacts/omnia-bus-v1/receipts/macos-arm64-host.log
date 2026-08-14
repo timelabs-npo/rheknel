@@ -1,0 +1,117 @@
+utc=2026-08-14T14:13:30Z
+repository=timelabs-npo/rheknel
+baseline_main=6e605c5077b561c5330b505fef3e6654fbb852dd
+branch=integration/rhea-link-v1
+pre_commit_head=38e56a1135587af39e56562344698fe2a43f4f71
+host=Darwin <local-host> 27.0.0 Darwin Kernel Version 27.0.0: Wed Aug  5 22:05:49 PDT 2026; root:xnu-13432.1.6.501.1~1/RELEASE_ARM64_T8103 arm64
+Apple clang version 21.0.0 (clang-2100.3.30.1)
+Target: arm64-apple-darwin27.0.0
+Thread model: posix
+InstalledDir: /Library/Developer/CommandLineTools/usr/bin
+cmake version 4.4.2
+
+[make test]
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+-- The C compiler identification is AppleClang 21.0.0.21000330
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Configuring done (0.6s)
+-- Generating done (0.1s)
+-- Build files have been written to: <workspace>/rheknel/build
+cmake --build build --config Release
+gmake[1]: Entering directory '<workspace>/rheknel/build'
+[ 11%] Building C object CMakeFiles/rheknel.dir/src/rhea.c.o
+[ 22%] Building C object CMakeFiles/rheknel.dir/src/omnia_bus.c.o
+[ 33%] Building C object CMakeFiles/rheknel.dir/src/platform.c.o
+[ 44%] Building C object CMakeFiles/rheknel.dir/src/sha256.c.o
+[ 55%] Linking C static library librheknel.a
+[ 55%] Built target rheknel
+[ 66%] Building C object CMakeFiles/rhea.dir/kernel.c.o
+[ 77%] Linking C executable rhea
+[ 77%] Built target rhea
+[ 88%] Building C object CMakeFiles/omnia_bus_tests.dir/tests/test_omnia_bus.c.o
+[100%] Linking C executable omnia_bus_tests
+[100%] Built target omnia_bus_tests
+gmake[1]: Leaving directory '<workspace>/rheknel/build'
+ctest --test-dir build --build-config Release --output-on-failure
+Test project <workspace>/rheknel/build
+    Start 1: omnia_bus_adversarial
+1/2 Test #1: omnia_bus_adversarial ............   Passed    0.19 sec
+    Start 2: omnia_bus_cli_pass
+2/2 Test #2: omnia_bus_cli_pass ...............   Passed    0.19 sec
+
+100% tests passed out of 2
+
+Total Test time (real) =   0.39 sec
+
+[make sanitize]
+cmake -S . -B build-sanitize -DCMAKE_BUILD_TYPE=Debug -DRHEKNEL_SANITIZE=ON
+-- The C compiler identification is AppleClang 21.0.0.21000330
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Configuring done (1.1s)
+-- Generating done (0.2s)
+-- Build files have been written to: <workspace>/rheknel/build-sanitize
+cmake --build build-sanitize
+gmake[1]: Entering directory '<workspace>/rheknel/build-sanitize'
+[ 11%] Building C object CMakeFiles/rheknel.dir/src/rhea.c.o
+[ 22%] Building C object CMakeFiles/rheknel.dir/src/omnia_bus.c.o
+[ 33%] Building C object CMakeFiles/rheknel.dir/src/platform.c.o
+[ 44%] Building C object CMakeFiles/rheknel.dir/src/sha256.c.o
+[ 55%] Linking C static library librheknel.a
+[ 55%] Built target rheknel
+[ 66%] Building C object CMakeFiles/rhea.dir/kernel.c.o
+[ 77%] Linking C executable rhea
+[ 77%] Built target rhea
+[ 88%] Building C object CMakeFiles/omnia_bus_tests.dir/tests/test_omnia_bus.c.o
+[100%] Linking C executable omnia_bus_tests
+[100%] Built target omnia_bus_tests
+gmake[1]: Leaving directory '<workspace>/rheknel/build-sanitize'
+ctest --test-dir build-sanitize --output-on-failure
+Test project <workspace>/rheknel/build-sanitize
+    Start 1: omnia_bus_adversarial
+1/2 Test #1: omnia_bus_adversarial ............   Passed    0.42 sec
+    Start 2: omnia_bus_cli_pass
+2/2 Test #2: omnia_bus_cli_pass ...............   Passed    0.22 sec
+
+100% tests passed out of 2
+
+Total Test time (real) =   0.65 sec
+
+[make embed-check]
+mkdir -p build
+python3 tools/embed_omnia.py tests/fixtures/omnia-dns-macos.omnb build/omnia-dns-macos.h --symbol omnia_dns_macos
+cmp build/omnia-dns-macos.h tests/fixtures/omnia-dns-macos.h
+
+[static analysis]
+clang_analyze=passed_no_findings
+
+[positive judge path]
+status=OK verdict=0 records_applicable=2 action_count=1 now=1786665600
+
+[stale fail-closed path]
+status=STALE verdict=2 records_applicable=2 action_count=0 now=1789257601
+stale_exit=2
+
+[sizes]
+    2432 tests/fixtures/omnia-dns-macos.omnb
+   15816 build/librheknel.a
+   35736 build/rhea
+   53984 total
+
+[hashes]
+c84075b7c8b28b16e3a97fa48b858a67530f42f55a5c4c051f9ad3e0f2b3c729  tests/fixtures/omnia-dns-macos.omnb
+27b08a2e65bfe1add2f07f0c493a6730a0da5ad97a849df2f9e192f72659c6f8  tests/fixtures/omnia-dns-macos.h
+a4d3573777816871f2ec3007566f4cfb31f278a60782bd5082b5e69c6064697d  docs/OMNIA_RHEKNEL_ABI.md
+
+[diff check]
+
+[portability boundary]
+openbsd_live=pending_external_ci
+mbsd_target=OpenWrt-23.05.4-Linux-MT7981-not-OpenBSD

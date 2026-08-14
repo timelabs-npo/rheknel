@@ -1,0 +1,26 @@
+{
+  "schema": "rheknel.omnia-bus-evidence/v1",
+  "abi": "1.0",
+  "rheknel_baseline": "6e605c5077b561c5330b505fef3e6654fbb852dd",
+  "omnia_producer_commit": "7a233147423dd350fcdcc8aa2709c0091df5bb02",
+  "omnia_source_baseline": "c9220eee388bba1b4d256d0a6ebd241cf5060102",
+  "golden_fixture": {
+    "path": "tests/fixtures/omnia-dns-macos.omnb",
+    "bytes": 2432,
+    "sha256": "c84075b7c8b28b16e3a97fa48b858a67530f42f55a5c4c051f9ad3e0f2b3c729"
+  },
+  "embedded_header": {
+    "path": "tests/fixtures/omnia-dns-macos.h",
+    "sha256": "27b08a2e65bfe1add2f07f0c493a6730a0da5ad97a849df2f9e192f72659c6f8"
+  },
+  "abi_spec": {
+    "path": "docs/OMNIA_RHEKNEL_ABI.md",
+    "sha256": "a4d3573777816871f2ec3007566f4cfb31f278a60782bd5082b5e69c6064697d"
+  },
+  "host_receipt": {
+    "path": "artifacts/omnia-bus-v1/receipts/macos-arm64-host.log",
+    "sha256": "f858f5d4b245e8413f7e0c4f84dbaa86f3afbee08509d1d32ad7ff6d247b1155"
+  },
+  "openbsd_live": "PENDING_EXTERNAL_CI",
+  "mbsd_target_observed": "OpenWrt 23.05.4 Linux MT7981; not OpenBSD"
+}

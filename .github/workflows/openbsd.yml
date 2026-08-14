@@ -1,0 +1,28 @@
+name: OpenBSD live ABI verification
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  openbsd:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, pinned 2026-07-16
+      - name: Build and run inside OpenBSD 7.9 VM
+        uses: vmactions/openbsd-vm@c30f6df85ed7db55c714ea9c354d00747d10481d # pinned 2026-08-13
+        with:
+          release: "7.9"
+          arch: x86_64
+          copyback: false
+          run: |
+            set -eu
+            uname -a
+            cc --version
+            make -f Makefile openbsd-test
+            sha256 tests/fixtures/omnia-dns-macos.omnb

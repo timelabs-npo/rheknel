@@ -19,8 +19,16 @@
   },
   "host_receipt": {
     "path": "artifacts/omnia-bus-v1/receipts/macos-arm64-host.log",
-    "sha256": "234a450ac0df506bb8ab670b30b0c16eb3bfb29499f7aa8b57541859ddf8bf19"
+    "sha256": "9c6feb26643d382c0fd7ab5e087ff266ab6c5ec3554ed63ef444b033355b6c04"
   },
-  "openbsd_live": "PENDING_EXTERNAL_CI",
+  "openbsd_live": {
+    "path": "artifacts/omnia-bus-v1/external-openbsd-receipt.md",
+    "sha256": "ae786eee19170eec69da4d384899475fdff9be54fc5ccd0582658daa02315d73",
+    "source_commit": "f1cafe4b1efb7773a7b7b7aed549a8e30b49d089",
+    "run_id": 31809158269,
+    "run_url": "https://github.com/timelabs-npo/rheknel/actions/runs/31809158269",
+    "guest": "OpenBSD 7.9 amd64",
+    "conclusion": "success"
+  },
   "mbsd_target_observed": "OpenWrt 23.05.4 Linux MT7981; not OpenBSD"
 }

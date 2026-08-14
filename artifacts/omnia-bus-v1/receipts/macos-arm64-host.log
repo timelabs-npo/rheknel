@@ -113,6 +113,6 @@ a4d3573777816871f2ec3007566f4cfb31f278a60782bd5082b5e69c6064697d  docs/OMNIA_RHE
 [diff check]
 
 [portability boundary]
-openbsd_live=clean_parent_run_passed; final_commit_rerun_required
-windows_msvc=fix_applied; final_commit_rerun_required
+openbsd_live=GitHub_CI_run_31809158269_success_at_source_commit_f1cafe4b1efb7773a7b7b7aed549a8e30b49d089
+windows_msvc=GitHub_CI_run_31809158065_success_at_source_commit_f1cafe4b1efb7773a7b7b7aed549a8e30b49d089
 mbsd_target=OpenWrt-23.05.4-Linux-MT7981-not-OpenBSD

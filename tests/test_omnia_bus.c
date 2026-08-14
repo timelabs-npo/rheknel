@@ -26,6 +26,15 @@ static void count_action(RheaContext *ctx) {
     ++action_count;
 }
 
+static FILE *open_binary_read(const char *path) {
+#if defined(_MSC_VER)
+    FILE *file = NULL;
+    return fopen_s(&file, path, "rb") == 0 ? file : NULL;
+#else
+    return fopen(path, "rb");
+#endif
+}
+
 static size_t load_fixture(const char *name, uint8_t *buffer, size_t capacity) {
     char path[1024];
     FILE *file;
@@ -34,7 +43,7 @@ static size_t load_fixture(const char *name, uint8_t *buffer, size_t capacity) {
     if (written < 0 || (size_t)written >= sizeof(path)) {
         return 0;
     }
-    file = fopen(path, "rb");
+    file = open_binary_read(path);
     if (file == NULL || fseek(file, 0, SEEK_END) != 0) {
         if (file != NULL) {
             (void)fclose(file);

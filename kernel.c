@@ -8,6 +8,15 @@
 
 static unsigned int action_count;
 
+static FILE *open_binary_read(const char *path) {
+#if defined(_MSC_VER)
+    FILE *file = NULL;
+    return fopen_s(&file, path, "rb") == 0 ? file : NULL;
+#else
+    return fopen(path, "rb");
+#endif
+}
+
 static void accepted_action(RheaContext *ctx) {
     (void)ctx;
     ++action_count;
@@ -20,7 +29,7 @@ static uint8_t *read_file(const char *path, size_t *size) {
     if (rhea_platform_enter_readonly() != 0) {
         return NULL;
     }
-    file = fopen(path, "rb");
+    file = open_binary_read(path);
     if (file == NULL || fseek(file, 0, SEEK_END) != 0) {
         if (file != NULL) {
             (void)fclose(file);

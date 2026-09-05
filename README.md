@@ -1,55 +1,135 @@
-RHEA v2: The Invariant Kernel / 不变式内核
-Rhea is an ultra-lightweight (< 2KB) deterministic event-driven kernel written in C, designed for managing AI agents in extreme resource-constrained environments where security and logic invariants are non-negotiable.
+<p align="center">
+  <img src="docs/readme/hero.svg" alt="Rheknel — The Stone Cronus Cannot Digest" width="100%" />
+</p>
 
-🏛️ Organization & Credits / 机构与致谢
-Organization: Timelabs NPO
+<h1 align="center">RHEKNEL</h1>
+<p align="center"><strong>THE STONE CRONUS CANNOT DIGEST.</strong></p>
+<p align="center"><em>Probabilistic systems may advise. The invariant gate gets the last word.</em></p>
 
-Authors:
+<p align="center">
+  <a href="https://blueshoes.space/rhea/">Rhea Pantheon</a> ·
+  <a href="SAFETY_Manifesto.en.md">Safety Manifesto</a> ·
+  <a href="decisions.md">Decisions</a> ·
+  <a href="0protocol.ru.md">Protocol 0</a>
+</p>
 
-Lead Architect: Mika IO (IET Force)
-Co-Authors: [System Logic: Gemini (Google DeepMind)].[DeepSeek (Hangzhou DSAI)],[ChatGPT (OpenAI)]
+---
 
-1. Manifesto: Anthropics vs. Everybody / 宣言：对抗概率论
-The AI industry has chosen the path of "black boxes" and "probabilistic safety." Rhea declares the end of the age of probability. We don't ask AI to be safe; we force it at the kernel level.
+An AI model can be brilliant, persuasive, statistically calibrated—and still have **no authority to mutate reality**.
 
-AI 行业选择了“黑盒”和“概率安全”的道路。Rhea 宣告概率时代的终结。我们不要求 AI 保持安全；我们通过内核级别强制其实施安全。
+Rheknel explores the smallest possible boundary between *advice* and *effect*: a deterministic C dispatcher where registered judges evaluate a context and return one of three verdicts before actions are emitted.
 
-2. Engineering Solidity / 工程可靠性 (IEEE DATE 2025)
-The project follows the principles of Trustworthy Co-Design (IEEE 10992986):
+```text
+        untrusted / probabilistic proposal
+                     │
+                     ▼
+             ┌──────────────┐
+             │   RHEKNEL    │
+             │ invariant gate│
+             └──────┬───────┘
+                    │
+         ┌──────────┼──────────┐
+         ▼          ▼          ▼
+        OK       REJECT     ESCALATE
+         │
+         ▼
+   tagged action dispatch
+```
 
-Hardware-Software Co-Design: Built for RISC-V/ESP32 execution.
-Deterministic Event Bus: Separation of Actions and Filters for 100% predictability.
-Zero-Allocation Policy: No heap, no malloc, zero memory leaks.
-该项目遵循 Trustworthy Co-Design 原则 (IEEE 10992986)：
+## Why the stone?
 
-软硬件协同设计：专为 RISC-V/ESP32 执行而构建。
-确定性事件总线：动作与过滤器的分离，实现 100% 的可预测性。
-零分配策略：无堆空间，无 malloc，零内存泄漏。
-3. Actuality & Autonomy / 现状与自主权
-AI Silicon: The software heart for open-source AI chips.
+Rhea saves Zeus from Cronus by handing Cronus a **stone wrapped as the child he intended to swallow**. Cronus accepts the substitution; succession survives.
 
-Computational Irreducibility: We enforce a "Tribunal" at every cycle instead of predicting hallucinations.
+Rheknel takes the stone as its emblem because a useful invariant sometimes has to be a categorical object the surrounding probabilistic machinery **cannot negotiate into something else**.
 
-L4 Autonomy: A hardware-level kill-switch for autonomous heavy machinery.
+> **ΚΡΟΝΟΣ ≠ ΧΡΟΝΟΣ.** Cronus is not Chronos. A myth can tolerate centuries of conflation. A control boundary cannot.
 
-AI 芯片：开源 AI 芯片的软件核心。
+## What exists in this repository
 
-计算不可约性：我们在每个周期执行“法庭”机制，而不是预测幻觉。
+The current `kernel.c` is a **small C prototype**, not a certified safety kernel and not proof of autonomous-system correctness.
 
-L4 自主：自主重型机械的硬件级切断开关。
+It currently provides:
 
-4. Technical Spec / 技术规格
-Language: Pure C (C99).
+- bounded static action and judge registries;
+- tagged callback registration;
+- `RHEA_OK`, `RHEA_REJECT`, and `RHEA_ESCALATE` verdicts;
+- deterministic judge iteration with short-circuit on the first non-OK verdict;
+- action dispatch only after the caller accepts the verdict;
+- no heap allocation in the demonstrated registry/dispatch path.
 
-Memory: < 2KB static footprint.
+The included `aletheia_judge_string()` is a **demo heuristic** that rejects a couple of literal strings. It is not a semantic truth oracle, not a prompt-injection proof, and not an independently validated safety policy.
 
-Architecture: Hook-based (Action/Filter Dispatcher).
+That distinction matters more than the slogan.
 
-🤝 Support & Contact / 支持与联系
-We seek industrial partners for Rhea Shield mass production and L4 Safety Certification.
+## The invariant shape
 
-我们正在寻求 Rhea Shield 量产和 L4 安全认证 的工业合作伙伴。
+```c
+typedef enum {
+    RHEA_OK = 0,
+    RHEA_REJECT = 1,
+    RHEA_ESCALATE = 2
+} RheaVerdict;
+```
 
-Email: timelabs.ad@gmail.com
+The architectural idea is deliberately boring:
 
-GitHub: github.com/timelabs-npo/rheknel
+1. **Observation/proposal enters as data.**
+2. **Judges evaluate it under bounded code paths.**
+3. **Any reject/escalate stops the optimistic path.**
+4. **Actions are separate callbacks, not model prose interpreted as capabilities.**
+
+The interesting work begins only when real invariants, typed contexts, evidence identities, failure semantics, and independent tests replace demonstration callbacks.
+
+## Build the prototype
+
+The repository currently uses a build file named `Make`:
+
+```bash
+make -f Make build
+make -f Make run
+```
+
+The target is compiled from `kernel.c` with GCC using C11 flags.
+
+## What Rheknel refuses to claim
+
+A README cannot certify itself.
+
+This repository does **not** currently establish:
+
+- formal verification;
+- constant-time or `O(1)` end-to-end enforcement guarantees;
+- sub-millisecond hardware response guarantees;
+- L4 autonomous-vehicle certification;
+- prompt-injection immunity;
+- production OpenBSD kernel integration;
+- safety certification of any physical actuator.
+
+Those may be research targets or integration directions. They become claims only when accompanied by executable evidence and an explicit qualification boundary.
+
+## The family contract
+
+Rheknel is not the whole system. It is the **NO-shaped object** inside a larger architecture.
+
+| Relative | Relationship to Rheknel |
+|---|---|
+| **Rhea Project** | defines staged authority boundaries and evidence contracts |
+| **Omnia Playbook** | supplies typed invariants, diagnostics, and procedures—not execution authority |
+| **Omnia Vault** | preserves immutable state/evidence and causal history |
+| **Blueshoes** | may propose/admit network mutations; actual effects require their own executor and receipts |
+
+Public family map: **https://blueshoes.space/rhea/**
+
+## Protocol 0
+
+> *It's dangerous to go alone.*
+
+Human and machine reasoning can collaborate. Neither gets to erase the invariant merely because the current answer is inconvenient.
+
+## License
+
+MIT. Timelabs NPO research project.
+
+---
+
+<p align="center"><strong>ADVICE IS CHEAP. AUTHORITY IS TYPED. NO MEANS NO.</strong></p>

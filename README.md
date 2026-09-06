@@ -3,133 +3,112 @@
 </p>
 
 <h1 align="center">RHEKNEL</h1>
-<p align="center"><strong>THE STONE CRONUS CANNOT DIGEST.</strong></p>
-<p align="center"><em>Probabilistic systems may advise. The invariant gate gets the last word.</em></p>
+<p align="center"><strong>A thousand eloquent models. One small, stubborn no.</strong></p>
+<p align="center"><em>The ambition: put the boundary where the effect begins.</em></p>
 
 <p align="center">
-  <a href="https://blueshoes.space/rhea/">Rhea Pantheon</a> ·
+  <a href="kernel.c">Read the prototype</a> ·
+  <a href="https://github.com/timelabs-npo/rheknel/pull/4">ABI integration work</a> ·
   <a href="SAFETY_Manifesto.en.md">Safety Manifesto</a> ·
-  <a href="decisions.md">Decisions</a> ·
-  <a href="0protocol.ru.md">Protocol 0</a>
+  <a href="https://blueshoes.space/rhea/">Family map</a>
 </p>
 
----
+Rheknel researches a tiny deterministic boundary between a proposal and an action. Intelligence can generate possibilities by the million. The machine still needs an exact answer to **“may this effect happen?”**
 
-An AI model can be brilliant, persuasive, statistically calibrated—and still have **no authority to mutate reality**.
+**Current main:** a small C11 dispatcher prototype with static registries, three verdicts and a demonstration caller. It is **not yet a fail-closed admission boundary**: an unknown judge tag returns `OK`, and callers can invoke action dispatch directly. Those behaviors are visible in [the source baseline](https://github.com/timelabs-npo/rheknel/blob/c07ca8384259b613f81cba197fb749f52b86d10f/kernel.c#L114).
 
-Rheknel explores the smallest possible boundary between *advice* and *effect*: a deterministic C dispatcher where registered judges evaluate a context and return one of three verdicts before actions are emitted.
+## The door matters more than the speech
+
+Imagine an assistant proposing to replace a saved file. Its explanation may be excellent. The file owner still needs to check the target, permission and intended change before anything is written.
+
+The interesting question is not how convincing the explanation sounds. It is whether **every path to the write passes through the same check**.
+
+That is Rheknel's territory: a boundary small enough to inspect, explicit enough to challenge, and eventually strict enough that a persuasive paragraph cannot redraw it.
+
+The current demonstration makes one caller ask its judges before invoking a callback:
 
 ```text
-        untrusted / probabilistic proposal
-                     │
-                     ▼
-             ┌──────────────┐
-             │   RHEKNEL    │
-             │ invariant gate│
-             └──────┬───────┘
-                    │
-         ┌──────────┼──────────┐
-         ▼          ▼          ▼
-        OK       REJECT     ESCALATE
-         │
-         ▼
-   tagged action dispatch
+                       demonstration caller
+                                │
+                          registered judges
+                                │
+                 ┌──────────────┼──────────────┐
+                 ▼              ▼              ▼
+                OK            REJECT        ESCALATE
+                 │              │              │
+                 ▼              └──── stop ────┘
+          tagged callback
 ```
 
-## Why the stone?
+The program's action is a printed demonstration message. It does not write that imagined file or authorize a physical actuator.
 
-Rhea saves Zeus from Cronus by handing Cronus a **stone wrapped as the child he intended to swallow**. Cronus accepts the substitution; succession survives.
+## Topology exposes the side door
 
-Rheknel takes the stone as its emblem because a useful invariant sometimes has to be a categorical object the surrounding probabilistic machinery **cannot negotiate into something else**.
+In this context, **topology** means the structure of possible calls: which input can reach which judge, and which caller can reach an effect. A gate on the front door is insufficient if another call goes straight to the callback.
 
-> **ΚΡΟΝΟΣ ≠ ΧΡΟΝΟΣ.** Cronus is not Chronos. A myth can tolerate centuries of conflation. A control boundary cannot.
+**Geometry** becomes useful when the surrounding system chooses how to compare candidate actions: perhaps their cost, delay or reversibility. Those comparisons can guide a proposal. They cannot grant it authority. The fixed registry sizes here bound storage; they are not a geometry of trust or a mathematical safety proof.
 
-## What exists in this repository
+**Flow** is the actual passage from proposal to decision to effect. The security question is brutally concrete: where can that passage evade the intended check?
 
-The current `kernel.c` is a **small C prototype**, not a certified safety kernel and not proof of autonomous-system correctness.
+Rheknel's goal is to make that question answerable from a small, testable interface. **Shrink the place where power changes hands. Make it difficult to hide a second one.**
 
-It currently provides:
+## What the prototype contains
 
-- bounded static action and judge registries;
-- tagged callback registration;
-- `RHEA_OK`, `RHEA_REJECT`, and `RHEA_ESCALATE` verdicts;
-- deterministic judge iteration with short-circuit on the first non-OK verdict;
-- action dispatch only after the caller accepts the verdict;
-- no heap allocation in the demonstrated registry/dispatch path.
+| Piece | Present behavior |
+|---|---|
+| Static registries | Up to 16 action tags and 16 judge tags, with up to 8 callbacks per tag |
+| Tagged registration | Action and judge callbacks stored without heap allocation in this path |
+| Three verdicts | `RHEA_OK`, `RHEA_REJECT`, `RHEA_ESCALATE` |
+| Judge iteration | Stops at the first non-OK result from a registered judge |
+| Demonstration policy | A literal-string heuristic, not semantic validation |
+| Action dispatch | Calls registered callbacks; the caller is responsible for invoking a judge first |
 
-The included `aletheia_judge_string()` is a **demo heuristic** that rejects a couple of literal strings. It is not a semantic truth oracle, not a prompt-injection proof, and not an independently validated safety policy.
+The details fit in [one C file](kernel.c). Small enough to read is a useful starting point. Small enough to certify is a separate achievement.
 
-That distinction matters more than the slogan.
+## The gaps are part of the map
 
-## The invariant shape
+Two present behaviors prevent the strongest claim:
 
-```c
-typedef enum {
-    RHEA_OK = 0,
-    RHEA_REJECT = 1,
-    RHEA_ESCALATE = 2
-} RheaVerdict;
-```
+- **Missing judge → `OK`.** An unregistered judge tag does not deny the request. See [`rhea_judge`](https://github.com/timelabs-npo/rheknel/blob/c07ca8384259b613f81cba197fb749f52b86d10f/kernel.c#L114).
+- **Direct emit → callbacks.** [`rhea_emit`](https://github.com/timelabs-npo/rheknel/blob/c07ca8384259b613f81cba197fb749f52b86d10f/kernel.c#L125) does not itself require a successful judgment. The demonstrated caller's discipline is not universal enforcement.
 
-The architectural idea is deliberately boring:
+The included judge rejects a couple of literal substrings. That is a teaching example, not a prompt-injection defense or truth oracle.
 
-1. **Observation/proposal enters as data.**
-2. **Judges evaluate it under bounded code paths.**
-3. **Any reject/escalate stops the optimistic path.**
-4. **Actions are separate callbacks, not model prose interpreted as capabilities.**
+The next boundary must make missing, malformed and unauthorized inputs explicit failures; bind decisions to typed operations and evidence; and keep the executor separate. Those are engineering obligations, not properties bestowed by this README.
 
-The interesting work begins only when real invariants, typed contexts, evidence identities, failure semantics, and independent tests replace demonstration callbacks.
+## Build and inspect
 
-## Build the prototype
-
-The repository currently uses a build file named `Make`:
+From the repository root, with GCC and Make available:
 
 ```bash
 make -f Make build
 make -f Make run
 ```
 
-The target is compiled from `kernel.c` with GCC using C11 flags.
+The build file is named [`Make`](Make), and its target compiles `kernel.c` using C11 flags. Running it exercises the demonstration only. The source does not currently establish formal verification, timing guarantees, production kernel integration or hardware safety qualification.
 
-## What Rheknel refuses to claim
+The [Omnia ABI integration PR #4](https://github.com/timelabs-npo/rheknel/pull/4) contains a separate C99 consumer and fail-closed integration effort with its own tests and receipts. It remains an unmerged workstream at this facade's source snapshot; inspect its commit and evidence together. Its behavior must not be attributed to this main-branch prototype.
 
-A README cannot certify itself.
+## The larger circuit
 
-This repository does **not** currently establish:
-
-- formal verification;
-- constant-time or `O(1)` end-to-end enforcement guarantees;
-- sub-millisecond hardware response guarantees;
-- L4 autonomous-vehicle certification;
-- prompt-injection immunity;
-- production OpenBSD kernel integration;
-- safety certification of any physical actuator.
-
-Those may be research targets or integration directions. They become claims only when accompanied by executable evidence and an explicit qualification boundary.
-
-## The family contract
-
-Rheknel is not the whole system. It is the **NO-shaped object** inside a larger architecture.
-
-| Relative | Relationship to Rheknel |
+| Neighbor | Relationship |
 |---|---|
-| **Rhea Project** | defines staged authority boundaries and evidence contracts |
-| **Omnia Playbook** | supplies typed invariants, diagnostics, and procedures—not execution authority |
-| **Omnia Vault** | preserves immutable state/evidence and causal history |
-| **Blueshoes** | may propose/admit network mutations; actual effects require their own executor and receipts |
+| [Rhea / Tribunal](https://github.com/timelabs-npo/rhea-project) | proposals, disagreement and staged authority contracts |
+| [Omnia Playbook](https://github.com/timelabs-npo/omnia-playbook) | operational invariants and diagnostic knowledge |
+| [Omnia Vault](https://github.com/timelabs-npo/omnia-vault) | state and evidence-preservation research |
+| [Blueshoes](https://github.com/timelabs-npo/Blueshoes) | proposed network effects that need their own executor and result evidence |
+| [MBSD](https://github.com/timelabs-npo/mbsd) | operating-substrate research with a separate hardware qualification boundary |
 
-Public family map: **https://blueshoes.space/rhea/**
+These are intended relationships. Model agreement does not supply authorization, and an admission decision does not prove that an executor succeeded.
 
-## Protocol 0
+## Why the stone?
 
-> *It's dangerous to go alone.*
+In the Rhea myth, Cronus swallows a wrapped stone in place of the child. Our emblem borrows its stubbornness: the categorical object a surrounding appetite cannot turn into something else.
 
-Human and machine reasoning can collaborate. Neither gets to erase the invariant merely because the current answer is inconvenient.
+The metaphor earns its place only when the implementation can hold the boundary.
 
-## License
-
-MIT. Timelabs NPO research project.
+[Decisions](decisions.md) · [Protocol 0](0protocol.ru.md) · [MIT license](LICENSE) · Timelabs NPO
 
 ---
 
-<p align="center"><strong>ADVICE IS CHEAP. AUTHORITY IS TYPED. NO MEANS NO.</strong></p>
+<p align="center"><strong>LET INTELLIGENCE ROAM. MAKE AUTHORITY PRECISE.</strong></p>

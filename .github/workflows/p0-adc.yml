@@ -92,7 +92,10 @@ jobs:
             --now 1790640000 \
             -o /tmp/omnia-ir.json
           cp tools/p0_effect_authority.py /tmp/p0_effect_authority.py
-          chmod 0555 /tmp/p0_effect_authority.py
+          cmake -S . -B /tmp/p0-gate-build -DCMAKE_BUILD_TYPE=Release
+          cmake --build /tmp/p0-gate-build --target p0_gate --config Release
+          cp /tmp/p0-gate-build/p0_gate /tmp/p0_gate
+          chmod 0555 /tmp/p0_effect_authority.py /tmp/p0_gate
           chmod 0444 /tmp/adc-ir.json /tmp/omnia-ir.json
           echo "ADC IR:"
           cat /tmp/adc-ir.json
@@ -127,7 +130,8 @@ jobs:
           sudo -u rheknel-authority python3 /tmp/p0_effect_authority.py \
             --ir /tmp/adc-ir.json \
             --payload /tmp/p0-after.bin \
-            --receipt /tmp/adc-receipt.json
+            --receipt /tmp/adc-receipt.json \
+            --gate /tmp/p0_gate
           cat /tmp/adc-receipt.json
           observed="$(sha256sum /var/lib/rheknel-protected/result.bin | awk '{print $1}')"
           test "$observed" = "efceb412448a47a7e85909d3ee3800aea941d9cd8125cce19f8b65ccff8eaf3b"
@@ -139,7 +143,8 @@ jobs:
           sudo -u rheknel-authority python3 /tmp/p0_effect_authority.py \
             --ir /tmp/omnia-ir.json \
             --payload /tmp/p0-after.bin \
-            --receipt /tmp/omnia-receipt.json
+            --receipt /tmp/omnia-receipt.json \
+            --gate /tmp/p0_gate
           cat /tmp/omnia-receipt.json
           observed="$(sha256sum /var/lib/rheknel-protected/result.bin | awk '{print $1}')"
           test "$observed" = "efceb412448a47a7e85909d3ee3800aea941d9cd8125cce19f8b65ccff8eaf3b"
@@ -154,7 +159,8 @@ jobs:
           sudo -u rheknel-authority python3 /tmp/p0_effect_authority.py \
             --ir /tmp/adc-ir.json \
             --payload /tmp/p0-wrong.bin \
-            --receipt /tmp/wrong-receipt.json
+            --receipt /tmp/wrong-receipt.json \
+            --gate /tmp/p0_gate
           status=$?
           set -e
           test "$status" -ne 0

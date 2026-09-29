@@ -159,3 +159,30 @@ Ask Mika only for:
 - explicit approval of material commitments;
 - local/physical verification unavailable through external infrastructure;
 - final signing/submission actions that genuinely require the human.
+
+## Restart record — two existing Work tasks, 2026-09-29
+
+This section is appended to preserve prior history. It does not promote historical claims or erase previous status.
+
+Execution instructions: [WORK_RESTART_2026-09-29.md](WORK_RESTART_2026-09-29.md).
+Instruction publication commit: `69fdee001f0b2a41087e94acfbe190a08a891c01`.
+
+| Item | Observed/prepared state | Evidence / next gate |
+|---|---|---|
+| Pro activation | USER_ASSERTION | User reports activation; native plan and remaining allowance not read |
+| Canonical ledger | READ | Ledger blob `38d99a1ee3ad54ab4a7badf1994685adfae8f237` at preparation baseline `1070fff2c26e9a053e992d47845cbfd90061acc8` |
+| A: existing portal/application-draft task | RESTART_INSTRUCTIONS_PREPARED; NOT_REACTIVATED | Work orders A0–A4; existing native thread ID and files require inspection |
+| B: existing audit-bundle/control-pane task | RESTART_INSTRUCTIONS_PREPARED; NOT_REACTIVATED | Work orders B0–B4; prior handoff identity recorded privately, not live-verified |
+| Desktop execution connection | BLOCKED | Device listing showed no online devices; connection attempt returned no devices available |
+| Saved Work files inspected in this preparation | NOT_DONE | No connected desktop/native thread access |
+| Native resume / turn-start receipts | NONE | A published Markdown instruction is not a running session |
+| New root Work sessions / spawned workers | ZERO / ZERO | No parallel replacement state created |
+| Global/account instruction changes | NONE | Protocol is explicit/task-local only |
+
+Position: restore the existing sessions, recover their files and apply bounded role-separated work; no new root threads or P0 feature expansion.
+
+Wave dependency: B official-source/claim audit -> A application synthesis and saved portal draft -> B final manual-review package. A may inventory actual portal fields before B evidence is ready. Each task owns distinct files; consume cross-task outputs only by pinned manifest. At most two subagents per active coordinator, no recursive spawning; serialize root swarms unless an actual scheduler enforces a combined budget.
+
+Important acceptance correction: the ledger is canonical for scope/decisions, not proof of its own claims. B must compare each consequential historical P0 assertion with actual source and tests before A reuses it. A green CI run cannot by itself establish complete contract semantics, universal non-bypassability or independent third-party reproduction. Retain historic results and append any bounded correction; do not rewrite old evidence or reopen P0 features.
+
+Immediate external gate: connected native execution -> verified existing thread identity -> saved-state recovery checkpoint -> real turn-start acknowledgment. Then the task may be labeled RUNNING. Until then both remain NOT_REACTIVATED.

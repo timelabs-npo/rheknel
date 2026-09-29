@@ -62,6 +62,13 @@ jobs:
         run: |
           git diff --exit-code 1e603bd65d7a320d759640cc36532284e54fd4fc HEAD -- src include kernel.c
           echo "core_semantic_diff=NONE"
+      - name: Measure P0 adapter overhead and existing core sizes
+        run: |
+          python3 tools/p0_benchmark.py --omnia-root external/omnia-playbook --iterations 200 | tee p0-benchmark.json
+          cmake -S . -B build-benchmark -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-benchmark --config Release
+          echo "librheknel_bytes=$(stat -c %s build-benchmark/librheknel.a)"
+          echo "rhea_cli_bytes=$(stat -c %s build-benchmark/rhea)"
 
   p0-effect-boundary:
     runs-on: ubuntu-latest

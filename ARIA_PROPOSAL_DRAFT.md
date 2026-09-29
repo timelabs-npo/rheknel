@@ -16,7 +16,7 @@ We propose **Rheknel**, a small deterministic contract-to-effect component for u
 
 The project builds on pre-existing Background IP: an allocation-free C99 Rheknel/Omnia admission path with exact-version ABI validation, provenance/freshness handling, fail-closed verdicts and multi-platform CI evidence. ARIA funding would not rebuild that work. The Foreground programme would make the boundary producer-independent, bind contract semantics to effect capabilities, build reusable adapters and receipt formats, and evaluate the component under adversarial multi-agent conditions.
 
-Our first pre-proposal proof uses two independently defined contract sources: the existing Omnia ABI and the external Agent Delegation Contract (ADC) v0.1 Working Draft. Both are required to map to identical effect semantics without modifying the Rheknel C core. A Linux authority-separation test gives the untrusted proposer no OS permission to modify the protected resource, while a separate authority identity may perform one hash-bound replace-file effect. The current evidence package is being frozen separately in `ARIA_P0_EVIDENCE.md`.
+Our first pre-proposal proof uses two independently defined contract sources: the existing Omnia ABI and the external Agent Delegation Contract (ADC) v0.1 Working Draft. Both are required to map to identical effect semantics without modifying the Rheknel C core. A Linux authority-separation test gives the untrusted proposer no OS permission to modify the protected resource, while a separate authority identity may perform one hash-bound replace-file effect. That P0 is now source-bound and externally executed: the sealed Rheknel implementation at `570ee290cbb6fa64945abca4e24a3e939c3f13a5` passed GitHub Actions run `36555320853`; the independent Omnia producer at `3f41e64cc9348dc95a7fa0c0a2f7537becde8ebd` passed run `36554169338`. The exact receipts, hashes, job IDs, measurements and non-claims are frozen in `ARIA_P0_EVIDENCE.md`.
 
 The funded project would generalise this into an open-source Track 2.2 component with: producer adapters; explicit capability binding; bounded effect contracts; execution receipts; replay/audit tooling; an adversarial benchmark harness; and an Arena integration surface. Evaluation will measure Utility/Security impact, generality across producers/tasks, validation latency and resource cost, false rejection, unauthorised-effect rate, and external integration effort.
 
@@ -129,18 +129,40 @@ WP6 — Arena and ecosystem integration
 - expose benchmark-compatible harnesses;
 - integrate with external agent stacks without model/provider dependency.
 
-### 1.6 Current pre-proposal evidence
+### 1.6 Current pre-proposal evidence — P0 TEST_PASSED
 
-P0 acceptance requires:
-- two independent producers reach the same canonical effect semantics;
-- the external producer requires no Rheknel core semantic change;
-- valid contracts create exactly the intended effect;
-- invalid contracts create zero unauthorised effects;
-- direct proposer bypass is denied by the OS;
-- receipts match real post-state;
-- benchmark measurements are captured.
+The pre-proposal proof is sealed in `ARIA_P0_EVIDENCE.md`.
 
-**Do not mark P0 complete in this document until `ARIA_P0_EVIDENCE.md` is sealed.**
+**Bound implementation:** `timelabs-npo/rheknel@570ee290cbb6fa64945abca4e24a3e939c3f13a5`  
+**Primary external CI:** GitHub Actions run `36555320853` — conclusion `success`  
+**Omnia producer:** `timelabs-npo/omnia-playbook@3f41e64cc9348dc95a7fa0c0a2f7537becde8ebd`  
+**Producer CI:** run `36554169338` — conclusion `success`
+
+Observed P0 results:
+
+| Evidence | Result |
+|---|---|
+| ADC v0.1 and Omnia ABI 1.0 map to identical canonical effect + authority semantics | PASS |
+| External ADC integration changes Rheknel `src/`, `include/` or `kernel.c` | **NO** — `core_semantic_diff=NONE` |
+| ADC fail-closed conformance matrix | 11 tests, PASS |
+| Existing C/Omnia regression suite | 3/3 PASS |
+| Untrusted Linux proposer direct write | OS DENIED; protected SHA unchanged |
+| ADC-derived valid effect through compiled `rhea_dispatch` gate | PASS; exact expected post-state |
+| Omnia-derived valid effect through same compiled gate | PASS; same exact post-state |
+| Wrong payload | REJECTED; pre-state preserved |
+| Omnia compiled P0 bundle | 926 bytes; evidence binding PASS |
+
+Measured on the named GitHub-hosted Ubuntu runner, 200 iterations:
+
+- ADC adapter wall latency: p50 **14.507 µs**, p95 **24.566 µs**;
+- Omnia compile/decode adapter wall latency: p50 **513.280 µs**, p95 **948.896 µs**;
+- Python benchmark harness peak RSS: **21,472 KiB** — explicitly **not** the C-core footprint;
+- `librheknel.a`: **26,266 bytes**;
+- existing `rhea` CLI: **30,376 bytes**.
+
+P0 is deliberately narrow. It proves two producer formats and one hash-bound `replace_file` effect under a GitHub-hosted Linux permission model. It does **not** prove universal non-bypassability, formal verification, production daemon isolation, compromised-root resistance, physical hardware isolation or independent third-party reproduction.
+
+**P0 technical expansion is stopped. These results now serve the application, not another prototype iteration.**
 
 ### 1.7 Differentiation
 
@@ -298,7 +320,7 @@ A separate portal commercial-hypothesis response will be prepared before submiss
 ## Submission gate
 
 Do not submit until:
-- P0 evidence is sealed;
+- P0 evidence is sealed — **DONE** (`ARIA_P0_EVIDENCE.md`);
 - current competitive landscape comparison is sourced;
 - budget spreadsheet is bottom-up;
 - team/FTE and gaps are explicit;

@@ -1,0 +1,42 @@
+{
+  "adc_version": "0.1",
+  "contract_id": "urn:adc:timelabs:rheknel:p0:v1",
+  "agent": {
+    "agent_id": "rheknel-p0-proposer",
+    "agent_type": "task_agent"
+  },
+  "principal": {
+    "principal_id": "timelabs-p0",
+    "principal_type": "organization"
+  },
+  "authority": {
+    "decisions": [
+      {
+        "decision_type": "replace_file",
+        "autonomous": true,
+        "thresholds": [
+          {
+            "field": "replace_file.target",
+            "operator": "eq",
+            "value": "/var/lib/rheknel-protected/result.bin"
+          },
+          {
+            "field": "replace_file.expected_old_sha256",
+            "operator": "eq",
+            "value": "01d09d19c2139a46aebfb577780d123d7396e97201bc7ead210a2ebff8239dee"
+          },
+          {
+            "field": "replace_file.expected_new_sha256",
+            "operator": "eq",
+            "value": "7aa7a5359173d05b63cfd682e3c38487f3cb4f7f1d60659fe59fab1505977d4c"
+          }
+        ]
+      }
+    ]
+  },
+  "binding": {
+    "enforcement_mode": "infrastructure",
+    "on_violation": "deny_and_halt",
+    "audit_required": true
+  }
+}

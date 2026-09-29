@@ -65,6 +65,25 @@ untrusted agents / negotiators / security reasoners
 
 The agent is not trusted to self-certify, self-enforce, or self-report success.
 
+## 2.5. Competitive boundary — what NOT to pitch
+
+The generic category "agent runs behind an external policy gate / sandbox / warden and emits receipts" is already crowded in 2026.
+
+Adjacent systems include NVIDIA OpenShell/Sentry, Microsoft Agent Governance Toolkit, Keel, OPA-style policy engines, AgentContract/AgentAssert, proof-of-execution work, action-receipt protocols and bounded-capability proposals.
+
+Therefore the proposal must NOT claim novelty from:
+- running policy outside the model process;
+- deny-by-default permissions by itself;
+- generic sandboxing;
+- generic audit receipts;
+- "the model cannot talk its way around policy".
+
+The differentiated claim must instead be narrower:
+
+> a small, portable deterministic TCB that preserves the semantics of externally produced negotiation/security contracts all the way to the real effect boundary, with producer-independent typed adapters, explicit capability binding and independently verifiable post-state evidence.
+
+This proposal is a NO-GO if that differentiation cannot be demonstrated against the current landscape.
+
 ## 3. Existing Background IP — do not rebuild
 
 The open PR #4 already provides a substantial deterministic admission substrate:

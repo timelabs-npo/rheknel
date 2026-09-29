@@ -37,8 +37,8 @@ Rheknel is a means, not the parent objective.
 | Team plan | IMPLEMENTED / OPEN ROLES | `ARIA_TEAM_UK_PLAN.md` | applicant/host + named capability where possible |
 | UK benefit/delivery | SPECIFIED / NOT YET COMMITTED | `ARIA_TEAM_UK_PLAN.md` | concrete partner/host/pilot evidence |
 | Commercial hypothesis | IMPLEMENTED | `ARIA_COMMERCIAL_HYPOTHESIS.md` | validate against external users/market |
-| Background / Foreground IP schedule | TODO | existing notes in proposal frame | explicit file/commit/license schedule |
-| Competitive landscape | TODO | — | sourced table vs current alternatives |
+| Background / Foreground IP schedule | IMPLEMENTED / LEGAL TITLE OPEN | `ARIA_IP_SCHEDULE.md` | verify actual ownership/entity/contributor title |
+| Competitive landscape | VERIFIED WORKING ANALYSIS | `ARIA_COMPETITIVE_LANDSCAPE.md` | keep differentiation current through submission |
 | ARIA cost spreadsheet | BLOCKED ON REAL COSTS | `ARIA_BUDGET_V1.md` is planning input | actual cost model / applicant route |
 | Final 10-page PDF | TODO | — | proposal content gates passed |
 | Portal submission | TODO | — | final admin facts + PDF + cost sheet |
@@ -102,15 +102,15 @@ Canonical budget:
 
 ## Next work order
 
-### N1 — Competitive landscape
+### N1 — Competitive landscape — DONE FOR DRAFTING
 Owner: 0NODE
-Output: sourced comparison against current sandboxes/wardens/policy engines/contract runtimes.
-Acceptance: exact differentiation survives comparison; otherwise thesis pivots.
+Output: `ARIA_COMPETITIVE_LANDSCAPE.md`.
+Result: CONDITIONAL GO survives; generic sandbox/warden novelty explicitly killed.
 
-### N2 — Background / Foreground IP schedule
+### N2 — Background / Foreground IP schedule — DONE FOR DRAFTING
 Owner: 0NODE
-Output: table of pre-existing commits/files vs ARIA-funded deliverables.
-Acceptance: no pre-existing feature is presented as grant-funded novelty.
+Output: `ARIA_IP_SCHEDULE.md`.
+Result: pre-award Rheknel/Omnia/P0 separated from planned Foreground; legal title remains an explicit admin/legal gate.
 
 ### N3 — Applicant / team / UK delivery closure
 Owner: 0NODE first; human/admin input only for irreducible facts.

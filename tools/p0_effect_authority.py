@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """P0 bounded effect authority.
 
-This is an experiment harness, not the final funded runtime.
-It executes exactly one effect type against exactly one protected target.
-
-The caller may supply a contract-derived canonical IR, but only the OS identity
-running this process owns write permission to the protected resource.
+Experiment harness only. It executes exactly one effect type against one target.
+Before the effect, the canonical typed effect is admitted through the compiled
+Rheknel C dispatch gate. Only the OS identity running this process owns write
+permission to the protected resource.
 """
 
 from __future__ import annotations
@@ -14,6 +13,7 @@ import argparse
 import hashlib
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -21,14 +21,11 @@ P0_TARGET = Path("/var/lib/rheknel-protected/result.bin")
 IR_VERSION = "0.1"
 HEX64 = frozenset("0123456789abcdef")
 
-
 class AuthorityError(RuntimeError):
     pass
 
-
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
-
 
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
@@ -40,7 +37,6 @@ def sha256_file(path: Path) -> str:
             digest.update(chunk)
     return digest.hexdigest()
 
-
 def require_sha256(value: object, name: str) -> str:
     if (
         not isinstance(value, str)
@@ -49,7 +45,6 @@ def require_sha256(value: object, name: str) -> str:
     ):
         raise AuthorityError(f"{name}: expected lowercase sha256 hex")
     return value
-
 
 def validate_ir(value: object) -> dict:
     if not isinstance(value, dict):
@@ -63,10 +58,7 @@ def validate_ir(value: object) -> dict:
 
     effect = value["effect"]
     if not isinstance(effect, dict) or set(effect) != {
-        "type",
-        "target",
-        "expected_old_sha256",
-        "expected_new_sha256",
+        "type", "target", "expected_old_sha256", "expected_new_sha256"
     }:
         raise AuthorityError("IR.effect: unexpected fields")
     if effect["type"] != "replace_file":
@@ -78,9 +70,7 @@ def validate_ir(value: object) -> dict:
 
     authority = value["authority"]
     if not isinstance(authority, dict) or set(authority) != {
-        "autonomous",
-        "enforcement_mode",
-        "audit_required",
+        "autonomous", "enforcement_mode", "audit_required"
     }:
         raise AuthorityError("IR.authority: unexpected fields")
     if authority["autonomous"] is not True:
@@ -91,8 +81,35 @@ def validate_ir(value: object) -> dict:
         raise AuthorityError("IR.authority.audit_required: must be true")
     return value
 
+def rheknel_gate(gate_path: Path, ir: dict) -> str:
+    effect = ir["effect"]
+    try:
+        result = subprocess.run(
+            [
+                str(gate_path),
+                effect["target"],
+                effect["expected_old_sha256"],
+                effect["expected_new_sha256"],
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except OSError as exc:
+        raise AuthorityError(f"Rheknel C gate could not execute: {exc}") from exc
 
-def execute(ir_path: Path, payload_path: Path, receipt_path: Path) -> dict:
+    stdout = result.stdout.strip()
+    if result.stderr:
+        print(result.stderr, file=sys.stderr, end="")
+    if stdout:
+        print(stdout)
+    if result.returncode != 0 or "rheknel_gate=PASS" not in stdout:
+        raise AuthorityError(
+            f"Rheknel C gate denied effect: exit={result.returncode} output={stdout!r}"
+        )
+    return stdout
+
+def execute(ir_path: Path, payload_path: Path, receipt_path: Path, gate_path: Path) -> dict:
     raw_ir = ir_path.read_bytes()
     try:
         ir = json.loads(raw_ir)
@@ -121,6 +138,8 @@ def execute(ir_path: Path, payload_path: Path, receipt_path: Path) -> dict:
         raise AuthorityError(
             f"payload mismatch: expected {expected_new}, observed {payload_hash}"
         )
+
+    gate_evidence = rheknel_gate(gate_path, ir)
 
     temp = target.with_name(f".{target.name}.p0-{os.getpid()}.tmp")
     fd = None
@@ -163,6 +182,7 @@ def execute(ir_path: Path, payload_path: Path, receipt_path: Path) -> dict:
             "after_sha256": after_hash,
         },
         "authority": ir["authority"],
+        "rheknel_gate": gate_evidence,
     }
     receipt_path.write_text(
         json.dumps(receipt, sort_keys=True, separators=(",", ":")) + "\n",
@@ -170,23 +190,22 @@ def execute(ir_path: Path, payload_path: Path, receipt_path: Path) -> dict:
     )
     return receipt
 
-
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--ir", type=Path, required=True)
     parser.add_argument("--payload", type=Path, required=True)
     parser.add_argument("--receipt", type=Path, required=True)
+    parser.add_argument("--gate", type=Path, required=True)
     args = parser.parse_args(argv)
 
     try:
-        receipt = execute(args.ir, args.payload, args.receipt)
+        receipt = execute(args.ir, args.payload, args.receipt, args.gate)
     except (OSError, AuthorityError) as exc:
         print(f"p0_effect_authority: reject: {exc}", file=sys.stderr)
         return 2
 
     print(json.dumps(receipt, sort_keys=True, separators=(",", ":")))
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

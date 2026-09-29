@@ -1,4 +1,4 @@
-name: ARIA P0 ADC conformance
+name: ARIA P0 producer conformance
 
 permissions:
   contents: read
@@ -29,3 +29,32 @@ jobs:
           cmake -S . -B build-p0 -DCMAKE_BUILD_TYPE=Release
           cmake --build build-p0 --config Release
           ctest --test-dir build-p0 --build-config Release --output-on-failure
+
+  p0-two-producers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 pinned
+        with:
+          fetch-depth: 0
+      - name: Checkout pinned Omnia P0 producer
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 pinned
+        with:
+          repository: timelabs-npo/omnia-playbook
+          ref: proposal/aria-p0-replace-file
+          path: external/omnia-playbook
+      - name: Install Omnia reference-codec dependencies
+        run: python3 -m pip install -r external/omnia-playbook/requirements-dev.txt
+      - name: Assert two independent producers map to identical effect semantics
+        run: |
+          python3 tests/test_p0_two_producers.py --omnia-root external/omnia-playbook
+          python3 tools/adc_to_rheknel.py tests/fixtures/adc-file-replace.json -o adc-ir.json
+          python3 tools/omnia_to_rheknel.py             --omnia-root external/omnia-playbook             --manifest bus/fixtures/p0-replace-file.bundle.json             --now 1790640000             -o omnia-ir.json
+          echo "ADC IR:"
+          cat adc-ir.json
+          echo "OMNIA IR:"
+          cat omnia-ir.json
+      - name: Prove producer integration did not modify Rheknel C core
+        run: |
+          git diff --exit-code 1e603bd65d7a320d759640cc36532284e54fd4fc HEAD -- src include kernel.c
+          echo "core_semantic_diff=NONE"

@@ -1,0 +1,31 @@
+name: ARIA P0 ADC conformance
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - proposal/aria-p0-adc
+  pull_request:
+
+jobs:
+  p0-adc:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 pinned
+      - name: Python adapter conformance
+        run: python3 tests/test_adc_adapter.py
+      - name: Emit canonical IR
+        run: |
+          python3 tools/adc_to_rheknel.py tests/fixtures/adc-file-replace.json -o build-adc-ir.json
+          cat build-adc-ir.json
+      - name: Existing C core regression
+        run: |
+          cmake -S . -B build-p0 -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-p0 --config Release
+          ctest --test-dir build-p0 --build-config Release --output-on-failure

@@ -5,6 +5,7 @@ import copy
 import importlib.util
 import json
 import pathlib
+import tempfile
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -67,9 +68,31 @@ class AdcAdapterTests(unittest.TestCase):
         with self.assertRaises(module.ContractError):
             module.adapt(contract)
 
+    def test_unknown_security_threshold_fails_closed(self):
+        contract = self.load()
+        contract["authority"]["decisions"][0]["thresholds"].append(
+            {"field": "replace_file.allow_symlink", "operator": "eq", "value": True}
+        )
+        with self.assertRaises(module.ContractError):
+            module.adapt(contract)
+
+    def test_non_autonomous_decision_fails_closed(self):
+        contract = self.load()
+        contract["authority"]["decisions"][0]["autonomous"] = False
+        with self.assertRaises(module.ContractError):
+            module.adapt(contract)
+
     def test_unknown_adc_version_fails_closed(self):
         contract = self.load()
         contract["adc_version"] = "0.2"
+        with self.assertRaises(module.ContractError):
+            module.adapt(contract)
+
+    def test_invalid_hash_fails_closed(self):
+        contract = self.load()
+        for item in contract["authority"]["decisions"][0]["thresholds"]:
+            if item["field"] == "replace_file.expected_new_sha256":
+                item["value"] = "not-a-sha256"
         with self.assertRaises(module.ContractError):
             module.adapt(contract)
 
@@ -80,6 +103,12 @@ class AdcAdapterTests(unittest.TestCase):
                 item["value"] = "relative/result.bin"
         with self.assertRaises(module.ContractError):
             module.adapt(contract)
+
+    def test_malformed_json_cli_fails_closed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = pathlib.Path(tmp) / "bad.json"
+            path.write_text("{not-json", encoding="utf-8")
+            self.assertEqual(module.main([str(path)]), 2)
 
 if __name__ == "__main__":
     unittest.main()

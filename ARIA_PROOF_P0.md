@@ -1,9 +1,9 @@
 # ARIA Pre-Proposal Proof Spec — P0
 
-Status: FROZEN FOR IMPLEMENTATION
+Status: TEST_PASSED — TECHNICAL EXPANSION STOPPED
 Date: 2026-09-29
 Parent: ARIA Scaling Trust Track 2.2
-Purpose: produce the minimum new evidence required for the proposal.
+Purpose: produce the minimum new evidence required for the proposal.\n\nEvidence record: `ARIA_P0_EVIDENCE.md`\nSealed implementation SHA: `570ee290cbb6fa64945abca4e24a3e939c3f13a5`\nPrimary successful CI run: `36555320853`
 
 ## 1. Question
 
@@ -17,13 +17,13 @@ If no, the general reusable-component claim is weak.
 Source: existing Omnia -> Rheknel ABI 1.0 path.
 Role: Background IP baseline.
 
-### Producer B — AgentContract draft 0.1
-Source: external open language-agnostic AI-agent contract specification.
-Role: independent external contract source.
+### Producer B — Agent Delegation Contract (ADC) v0.1 Working Draft
+Source: external open machine-readable authorization specification.
+Role: independent external authority-contract source.
 
 Important:
-Rheknel does NOT replace AgentContract.
-The experiment tests whether an external behavioral contract can be adapted into the same deterministic effect-boundary representation used by existing Omnia data.
+Rheknel does NOT replace ADC.
+The experiment tests whether an external authorization contract can be adapted into the same deterministic effect-boundary representation used by existing Omnia data.
 
 ## 3. Core invariant
 
@@ -53,7 +53,7 @@ The untrusted proposer identity cannot directly replace the file.
 ```text
 Omnia ABI 1.0 -----\
                     > adapter -> canonical Rheknel IR
-AgentContract YAML-/                    |
+ADC JSON----------/                    |
                                         v
                                deterministic judge
                                         |
@@ -132,7 +132,7 @@ STOP and revise the ARIA thesis if:
 
 Only:
 
-- AgentContract adapter;
+- ADC adapter;
 - Omnia adapter reuse / minimal normalisation if necessary;
 - canonical IR definition;
 - one bounded file effector;
@@ -150,9 +150,13 @@ No additional effect types before P0 PASS.
 
 ## 12. After PASS
 
-Capture results.
-Freeze source SHA.
-Use measurements in ARIA proposal.
-STOP.
+**EXECUTED.**
+
+- Results captured in `ARIA_P0_EVIDENCE.md`.
+- Implementation source frozen at `570ee290cbb6fa64945abca4e24a3e939c3f13a5`.
+- Measurements are proposal evidence.
+- Technical expansion is STOPPED.
+
+Next work belongs to the ARIA proposal/budget/team/application lane, not to P0.
 
 Do not turn P0 into the funded project.

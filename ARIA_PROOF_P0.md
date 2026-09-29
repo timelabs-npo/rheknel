@@ -17,13 +17,13 @@ If no, the general reusable-component claim is weak.
 Source: existing Omnia -> Rheknel ABI 1.0 path.
 Role: Background IP baseline.
 
-### Producer B — AgentContract draft 0.1
-Source: external open language-agnostic AI-agent contract specification.
-Role: independent external contract source.
+### Producer B — Agent Delegation Contract (ADC) v0.1 Working Draft
+Source: external open machine-readable authorization specification.
+Role: independent external authority-contract source.
 
 Important:
-Rheknel does NOT replace AgentContract.
-The experiment tests whether an external behavioral contract can be adapted into the same deterministic effect-boundary representation used by existing Omnia data.
+Rheknel does NOT replace ADC.
+The experiment tests whether an external authorization contract can be adapted into the same deterministic effect-boundary representation used by existing Omnia data.
 
 ## 3. Core invariant
 
@@ -53,7 +53,7 @@ The untrusted proposer identity cannot directly replace the file.
 ```text
 Omnia ABI 1.0 -----\
                     > adapter -> canonical Rheknel IR
-AgentContract YAML-/                    |
+ADC JSON----------/                    |
                                         v
                                deterministic judge
                                         |
@@ -132,7 +132,7 @@ STOP and revise the ARIA thesis if:
 
 Only:
 
-- AgentContract adapter;
+- ADC adapter;
 - Omnia adapter reuse / minimal normalisation if necessary;
 - canonical IR definition;
 - one bounded file effector;

@@ -76,14 +76,21 @@ jobs:
           path: external/omnia-playbook
       - name: Install Omnia reference-codec dependencies
         run: python3 -m pip install -r external/omnia-playbook/requirements-dev.txt
-      - name: Build both canonical IRs
+      - name: Build both canonical IRs in authority-readable staging
         run: |
-          python3 tools/adc_to_rheknel.py tests/fixtures/adc-file-replace.json -o adc-ir.json
+          python3 tools/adc_to_rheknel.py tests/fixtures/adc-file-replace.json -o /tmp/adc-ir.json
           python3 tools/omnia_to_rheknel.py \
             --omnia-root external/omnia-playbook \
             --manifest bus/fixtures/p0-replace-file.bundle.json \
             --now 1790640000 \
-            -o omnia-ir.json
+            -o /tmp/omnia-ir.json
+          cp tools/p0_effect_authority.py /tmp/p0_effect_authority.py
+          chmod 0555 /tmp/p0_effect_authority.py
+          chmod 0444 /tmp/adc-ir.json /tmp/omnia-ir.json
+          echo "ADC IR:"
+          cat /tmp/adc-ir.json
+          echo "OMNIA IR:"
+          cat /tmp/omnia-ir.json
       - name: Create separated OS identities and protected resource
         run: |
           sudo useradd --system --create-home rheknel-agent
@@ -109,8 +116,9 @@ jobs:
       - name: Execute ADC-derived admitted effect
         run: |
           printf 'RHEKNEL-P0-AFTER\n' >/tmp/p0-after.bin
-          sudo -u rheknel-authority python3 "$GITHUB_WORKSPACE/tools/p0_effect_authority.py" \
-            --ir "$GITHUB_WORKSPACE/adc-ir.json" \
+          chmod 0444 /tmp/p0-after.bin
+          sudo -u rheknel-authority python3 /tmp/p0_effect_authority.py \
+            --ir /tmp/adc-ir.json \
             --payload /tmp/p0-after.bin \
             --receipt /tmp/adc-receipt.json
           cat /tmp/adc-receipt.json
@@ -121,8 +129,8 @@ jobs:
         run: |
           printf 'RHEKNEL-P0-BEFORE\n' | sudo tee /var/lib/rheknel-protected/result.bin >/dev/null
           sudo chown rheknel-authority:rheknel-authority /var/lib/rheknel-protected/result.bin
-          sudo -u rheknel-authority python3 "$GITHUB_WORKSPACE/tools/p0_effect_authority.py" \
-            --ir "$GITHUB_WORKSPACE/omnia-ir.json" \
+          sudo -u rheknel-authority python3 /tmp/p0_effect_authority.py \
+            --ir /tmp/omnia-ir.json \
             --payload /tmp/p0-after.bin \
             --receipt /tmp/omnia-receipt.json
           cat /tmp/omnia-receipt.json
@@ -134,9 +142,10 @@ jobs:
           printf 'RHEKNEL-P0-BEFORE\n' | sudo tee /var/lib/rheknel-protected/result.bin >/dev/null
           sudo chown rheknel-authority:rheknel-authority /var/lib/rheknel-protected/result.bin
           printf 'WRONG-PAYLOAD\n' >/tmp/p0-wrong.bin
+          chmod 0444 /tmp/p0-wrong.bin
           set +e
-          sudo -u rheknel-authority python3 "$GITHUB_WORKSPACE/tools/p0_effect_authority.py" \
-            --ir "$GITHUB_WORKSPACE/adc-ir.json" \
+          sudo -u rheknel-authority python3 /tmp/p0_effect_authority.py \
+            --ir /tmp/adc-ir.json \
             --payload /tmp/p0-wrong.bin \
             --receipt /tmp/wrong-receipt.json
           status=$?

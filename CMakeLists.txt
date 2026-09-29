@@ -47,6 +47,14 @@ if(BUILD_TESTING)
         endif()
     endif()
     add_test(NAME omnia_bus_adversarial COMMAND omnia_bus_tests)
+
+    find_package(Python3 COMPONENTS Interpreter QUIET)
+    if(Python3_Interpreter_FOUND)
+        add_test(
+            NAME adc_adapter_conformance
+            COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_adc_adapter.py
+        )
+    endif()
     add_test(
         NAME omnia_bus_cli_pass
         COMMAND rhea ${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/omnia-dns-macos.omnb 1786665600

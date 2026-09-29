@@ -4,6 +4,7 @@ Last updated: 2026-09-29
 Repository: `timelabs-npo/rheknel`
 Canonical branch: `proposal/aria-scaling-trust-2-2`
 Execution tracker: https://github.com/timelabs-npo/rheknel/issues/6
+Canonical truth ledger: `ZERO_TRUST_PROJECT_LEDGER.md`
 
 ## Parent objective
 
@@ -23,10 +24,13 @@ Rheknel is a means, not the parent objective.
 
 ## Current state
 
+**Mandatory truth source:** before reporting progress, read `ZERO_TRUST_PROJECT_LEDGER.md`. It overrides narrative continuity from chat.
+
 | Gate | Status | Direct evidence / canonical artifact | Next condition |
 |---|---|---|---|
 | Track fit | SPECIFIED | `ARIA_SCALING_TRUST_TRACK2.md` | competitive comparison must be sourced |
 | GO / NO-GO positioning | CONDITIONAL GO | `ARIA_GO_NO_GO.md` | remain differentiated from generic sandbox/warden |
+| Original M0 | NOT_DONE | `ZERO_TRUST_PROJECT_LEDGER.md` | do not conflate with ARIA P0 |
 | P0 proof specification | TEST_PASSED / STOPPED | `ARIA_PROOF_P0.md` | no more P0 features |
 | P0 source-bound evidence | VERIFIED | `ARIA_P0_EVIDENCE.md` | use in proposal |
 | P0 implementation | VERIFIED | Rheknel SHA `570ee290cbb6fa64945abca4e24a3e939c3f13a5`, run `36555320853` | frozen |

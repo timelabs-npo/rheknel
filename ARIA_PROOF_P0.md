@@ -1,9 +1,9 @@
 # ARIA Pre-Proposal Proof Spec — P0
 
-Status: FROZEN FOR IMPLEMENTATION
+Status: TEST_PASSED — TECHNICAL EXPANSION STOPPED
 Date: 2026-09-29
 Parent: ARIA Scaling Trust Track 2.2
-Purpose: produce the minimum new evidence required for the proposal.
+Purpose: produce the minimum new evidence required for the proposal.\n\nEvidence record: `ARIA_P0_EVIDENCE.md`\nSealed implementation SHA: `570ee290cbb6fa64945abca4e24a3e939c3f13a5`\nPrimary successful CI run: `36555320853`
 
 ## 1. Question
 
@@ -150,9 +150,13 @@ No additional effect types before P0 PASS.
 
 ## 12. After PASS
 
-Capture results.
-Freeze source SHA.
-Use measurements in ARIA proposal.
-STOP.
+**EXECUTED.**
+
+- Results captured in `ARIA_P0_EVIDENCE.md`.
+- Implementation source frozen at `570ee290cbb6fa64945abca4e24a3e939c3f13a5`.
+- Measurements are proposal evidence.
+- Technical expansion is STOPPED.
+
+Next work belongs to the ARIA proposal/budget/team/application lane, not to P0.
 
 Do not turn P0 into the funded project.

@@ -48,7 +48,7 @@ def _extract_eq_thresholds(decision):
         field = _require_string(item.get("field"), "threshold.field")
         operator = _require_string(item.get("operator"), "threshold.operator")
         if field not in REQUIRED_THRESHOLD_FIELDS:
-            continue
+            raise ContractError(f"{field}: unsupported threshold field in P0")
         if operator != "eq":
             raise ContractError(f"{field}: only operator=eq is accepted in P0")
         if field in values:

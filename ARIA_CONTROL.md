@@ -39,7 +39,7 @@ Rheknel is a means, not the parent objective.
 | Proposal draft | IMPLEMENTED | `ARIA_PROPOSAL_DRAFT.md` | competitive/team/admin editing |
 | £900k budget model | IMPLEMENTED / UNVALIDATED COSTS | `ARIA_BUDGET_V1.md` | replace planning rates with actual eligible costs/quotes |
 | Team plan | IMPLEMENTED / OPEN ROLES | `ARIA_TEAM_UK_PLAN.md` | applicant/host + named capability where possible |
-| UK benefit/delivery | SPECIFIED / NOT YET COMMITTED | `ARIA_TEAM_UK_PLAN.md` | concrete partner/host/pilot evidence |
+| UK benefit/delivery | SPECIFIED / NOT_YET_COMMITTED | `ARIA_TEAM_UK_PLAN.md` | concrete partner/host/pilot evidence |
 | Commercial hypothesis | IMPLEMENTED | `ARIA_COMMERCIAL_HYPOTHESIS.md` | validate against external users/market |
 | Background / Foreground IP schedule | IMPLEMENTED / LEGAL TITLE OPEN | `ARIA_IP_SCHEDULE.md` | verify actual ownership/entity/contributor title |
 | Competitive landscape | VERIFIED WORKING ANALYSIS | `ARIA_COMPETITIVE_LANDSCAPE.md` | keep differentiation current through submission |
@@ -186,3 +186,29 @@ Wave dependency: B official-source/claim audit -> A application synthesis and sa
 Important acceptance correction: the ledger is canonical for scope/decisions, not proof of its own claims. B must compare each consequential historical P0 assertion with actual source and tests before A reuses it. A green CI run cannot by itself establish complete contract semantics, universal non-bypassability or independent third-party reproduction. Retain historic results and append any bounded correction; do not rewrite old evidence or reopen P0 features.
 
 Immediate external gate: connected native execution -> verified existing thread identity -> saved-state recovery checkpoint -> real turn-start acknowledgment. Then the task may be labeled RUNNING. Until then both remain NOT_REACTIVATED.
+
+## Cross-machine, multi-tool recovery gate — WD recheck
+
+This additive instruction applies to BOTH existing Work recovery tasks. It does not expand either deliverable into a complete reconstruction of every project.
+
+**Parent-scope correction:** the user's global project space is larger than ARIA, this repository, or ChatGPT's history. This ARIA ledger controls this scoped workflow; it is not a complete inventory of the global work. Do not erase or subordinate another tool's completed work merely because this ledger omits it. No absence claim is valid for uninspected storage.
+
+User-reported, non-exhaustive contributor candidates across both machines: ChatGPT, gemini-cli, Gemini, codex-cli, `antigraity` (raw user spelling; possible Antigravity), Trae, TraeWork, DeepSeek, OpenRouter, Grok, and others not yet recalled. These labels are discovery hints, NOT verified installations, running sessions, independent implementations or a complete roster. Keep application/client, provider/router, model ID, session ID and responsible human separate; do not count each label as a distinct agent.
+
+**Current access observations:** a fresh Desktop Commander device listing showed both `wd` and `mio.local` offline. A direct ping to the registered WD device returned `No Desktop Commander device is currently online.` Neither filesystem nor native session state was accessed. This proves connection unavailability through this connector, not that either machine is powered off, its local agents are stopped, its files are lost, or its model quota is exhausted. Do not publish account/device IDs, private paths or raw histories here.
+
+### G0-M: metadata-first reconciliation before write/restart
+
+1. On a reachable authorized machine, establish OS, relevant user/profile, workspace roots, existing session IDs and current writers without dumping environment variables, credentials, command-line secrets or unrelated personal histories. Include host and guest/subsystem/container workspaces only when their actual presence is observed.
+2. Start with project/recent-workspace indexes and repository metadata, not recursive full-disk content search. Discover contributing clients beyond the named list from relevant project/session references; do not assume vendor-specific paths. Inspect authorized project histories/artifacts using supported read-only access. Do not edit live session databases or synchronize them by copying a database without a consistent snapshot mechanism.
+3. Inventory relevant Git HEADs, local refs, remote-tracking refs with freshness, worktrees, stash entries, staged/unstaged and untracked filenames. Do not fetch/pull/merge/reset/clean/stash/apply patches to make the inventory easier. Preserve local-only artifacts, exported conversations, reports, test logs and partial bundles; GitHub alone is not a backup of them.
+4. Create a PRIVATE source registry: machine/profile; project/parent scope; app/client; provider/model if evidenced; session ID; original task; source path/ref; file hash; observed state; last observation; associated commit/diff/evidence; current writer if evidenced; visibility/access gaps. Missing or not inspected is not not done. Attribution needs a source: Git author, filename or model self-report alone does not establish which model performed work.
+5. Relate overlapping artifacts and decisions by exact contents, common Git ancestors, task scope and acceptance evidence. Same bytes can share content storage but retain every provenance reference. Different bytes require a visible conflict/supersession record; neither newest timestamp nor preferred provider automatically wins. Do not auto-resolve semantic conflicts.
+6. Update the single-canvas DATA requirements: global overview -> project scopes (ARIA is one) -> machine/workspace -> session/contributor -> artifacts/evidence -> decisions/tasks/dependencies. ARIA-only is a filter, not the global root. Show local-only work, unseen sources and unresolved conflicts. Do not mark a canvas as updated until its real file/data/view has been inspected and tested.
+7. Resume an identified original task only after its affected workspace, applicable instructions and write ownership are reconciled. Do NOT require the whole model catalogue or every unrelated project to be audited first. An inaccessible second machine remains an explicit coverage gap; isolated read-only or non-conflicting work may proceed, but do not publish a global complete inventory or overwrite potentially competing shared work.
+
+No other client/session is restarted merely because it is discovered. No global AGENTS.md, GEMINI.md, IDE rules, account instructions, default models or provider credentials are changed. Swarm workers consume approved, hash-pinned artifacts; they do not inherit a model's narrative as truth.
+
+**Acceptance of G0-M:** for the next runnable unit, preserve existing outputs, expose relevant competing writes/semantic conflicts, name one writer and one verifier, and record remaining visibility gaps. A checksum establishes bytes, not correctness; another model agreeing is not independent evidence. Retain the existing bounded-wave/consumption limits.
+
+**Execution status after this WD recheck:** connection BLOCKED; machine inventory NOT_INSPECTED; existing Work turns NOT_REACTIVATED; local app/config changes NONE. This document update records the scope correction only.

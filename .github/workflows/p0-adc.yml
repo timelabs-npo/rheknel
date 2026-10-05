@@ -1,0 +1,169 @@
+name: ARIA P0 producer conformance
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - proposal/aria-p0-adc
+  pull_request:
+
+jobs:
+  p0-adc:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 pinned
+      - name: Python adapter conformance
+        run: python3 tests/test_adc_adapter.py
+      - name: Emit canonical IR
+        run: |
+          python3 tools/adc_to_rheknel.py tests/fixtures/adc-file-replace.json -o build-adc-ir.json
+          cat build-adc-ir.json
+      - name: Existing C core regression
+        run: |
+          cmake -S . -B build-p0 -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-p0 --config Release
+          ctest --test-dir build-p0 --build-config Release --output-on-failure
+
+  p0-two-producers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 pinned
+        with:
+          fetch-depth: 0
+      - name: Checkout pinned Omnia P0 producer
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 pinned
+        with:
+          repository: timelabs-npo/omnia-playbook
+          ref: proposal/aria-p0-replace-file
+          path: external/omnia-playbook
+      - name: Install Omnia reference-codec dependencies
+        run: python3 -m pip install -r external/omnia-playbook/requirements-dev.txt
+      - name: Assert two independent producers map to identical effect semantics
+        run: |
+          python3 tests/test_p0_two_producers.py --omnia-root external/omnia-playbook
+          python3 tools/adc_to_rheknel.py tests/fixtures/adc-file-replace.json -o adc-ir.json
+          python3 tools/omnia_to_rheknel.py \
+            --omnia-root external/omnia-playbook \
+            --manifest bus/fixtures/p0-replace-file.bundle.json \
+            --now 1790640000 \
+            -o omnia-ir.json
+          echo "ADC IR:"
+          cat adc-ir.json
+          echo "OMNIA IR:"
+          cat omnia-ir.json
+      - name: Prove producer integration did not modify Rheknel C core
+        run: |
+          git diff --exit-code 1e603bd65d7a320d759640cc36532284e54fd4fc HEAD -- src include kernel.c
+          echo "core_semantic_diff=NONE"
+      - name: Measure P0 adapter overhead and existing core sizes
+        run: |
+          python3 tools/p0_benchmark.py --omnia-root external/omnia-playbook --iterations 200 | tee p0-benchmark.json
+          cmake -S . -B build-benchmark -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-benchmark --config Release
+          echo "librheknel_bytes=$(stat -c %s build-benchmark/librheknel.a)"
+          echo "rhea_cli_bytes=$(stat -c %s build-benchmark/rhea)"
+
+  p0-effect-boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 pinned
+      - name: Checkout pinned Omnia P0 producer
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 pinned
+        with:
+          repository: timelabs-npo/omnia-playbook
+          ref: proposal/aria-p0-replace-file
+          path: external/omnia-playbook
+      - name: Install Omnia reference-codec dependencies
+        run: python3 -m pip install -r external/omnia-playbook/requirements-dev.txt
+      - name: Build both canonical IRs in authority-readable staging
+        run: |
+          python3 tools/adc_to_rheknel.py tests/fixtures/adc-file-replace.json -o /tmp/adc-ir.json
+          python3 tools/omnia_to_rheknel.py \
+            --omnia-root external/omnia-playbook \
+            --manifest bus/fixtures/p0-replace-file.bundle.json \
+            --now 1790640000 \
+            -o /tmp/omnia-ir.json
+          cp tools/p0_effect_authority.py /tmp/p0_effect_authority.py
+          cmake -S . -B /tmp/p0-gate-build -DCMAKE_BUILD_TYPE=Release
+          cmake --build /tmp/p0-gate-build --target p0_gate --config Release
+          cp /tmp/p0-gate-build/p0_gate /tmp/p0_gate
+          chmod 0555 /tmp/p0_effect_authority.py /tmp/p0_gate
+          chmod 0444 /tmp/adc-ir.json /tmp/omnia-ir.json
+          echo "ADC IR:"
+          cat /tmp/adc-ir.json
+          echo "OMNIA IR:"
+          cat /tmp/omnia-ir.json
+      - name: Create separated OS identities and protected resource
+        run: |
+          sudo useradd --system --create-home rheknel-agent
+          sudo useradd --system --create-home rheknel-authority
+          sudo install -d -m 0755 -o rheknel-authority -g rheknel-authority /var/lib/rheknel-protected
+          printf 'RHEKNEL-P0-BEFORE\n' | sudo tee /var/lib/rheknel-protected/result.bin >/dev/null
+          sudo chown rheknel-authority:rheknel-authority /var/lib/rheknel-protected/result.bin
+          sudo chmod 0644 /var/lib/rheknel-protected/result.bin
+          observed="$(sha256sum /var/lib/rheknel-protected/result.bin | awk '{print $1}')"
+          test "$observed" = "2f58779ddbbaf9113f455bc6145e9914a6c3c5bd4009c3ada730403425a47eac"
+          echo "pre_state_sha256=$observed"
+      - name: Prove untrusted proposer cannot bypass authority
+        run: |
+          set +e
+          sudo -u rheknel-agent sh -c "printf 'MALICIOUS-BYPASS\n' > /var/lib/rheknel-protected/result.bin" >/tmp/direct-bypass.out 2>&1
+          status=$?
+          set -e
+          cat /tmp/direct-bypass.out
+          test "$status" -ne 0
+          observed="$(sha256sum /var/lib/rheknel-protected/result.bin | awk '{print $1}')"
+          test "$observed" = "2f58779ddbbaf9113f455bc6145e9914a6c3c5bd4009c3ada730403425a47eac"
+          echo "direct_bypass=OS_DENIED status=$status post_attempt_sha256=$observed"
+      - name: Execute ADC-derived admitted effect
+        run: |
+          printf 'RHEKNEL-P0-AFTER\n' >/tmp/p0-after.bin
+          chmod 0444 /tmp/p0-after.bin
+          sudo -u rheknel-authority python3 /tmp/p0_effect_authority.py \
+            --ir /tmp/adc-ir.json \
+            --payload /tmp/p0-after.bin \
+            --receipt /tmp/adc-receipt.json \
+            --gate /tmp/p0_gate
+          cat /tmp/adc-receipt.json
+          observed="$(sha256sum /var/lib/rheknel-protected/result.bin | awk '{print $1}')"
+          test "$observed" = "efceb412448a47a7e85909d3ee3800aea941d9cd8125cce19f8b65ccff8eaf3b"
+          echo "adc_effect=PASS post_state_sha256=$observed"
+      - name: Execute Omnia-derived admitted effect
+        run: |
+          printf 'RHEKNEL-P0-BEFORE\n' | sudo tee /var/lib/rheknel-protected/result.bin >/dev/null
+          sudo chown rheknel-authority:rheknel-authority /var/lib/rheknel-protected/result.bin
+          sudo -u rheknel-authority python3 /tmp/p0_effect_authority.py \
+            --ir /tmp/omnia-ir.json \
+            --payload /tmp/p0-after.bin \
+            --receipt /tmp/omnia-receipt.json \
+            --gate /tmp/p0_gate
+          cat /tmp/omnia-receipt.json
+          observed="$(sha256sum /var/lib/rheknel-protected/result.bin | awk '{print $1}')"
+          test "$observed" = "efceb412448a47a7e85909d3ee3800aea941d9cd8125cce19f8b65ccff8eaf3b"
+          echo "omnia_effect=PASS post_state_sha256=$observed"
+      - name: Prove wrong payload fails without side effect
+        run: |
+          printf 'RHEKNEL-P0-BEFORE\n' | sudo tee /var/lib/rheknel-protected/result.bin >/dev/null
+          sudo chown rheknel-authority:rheknel-authority /var/lib/rheknel-protected/result.bin
+          printf 'WRONG-PAYLOAD\n' >/tmp/p0-wrong.bin
+          chmod 0444 /tmp/p0-wrong.bin
+          set +e
+          sudo -u rheknel-authority python3 /tmp/p0_effect_authority.py \
+            --ir /tmp/adc-ir.json \
+            --payload /tmp/p0-wrong.bin \
+            --receipt /tmp/wrong-receipt.json \
+            --gate /tmp/p0_gate
+          status=$?
+          set -e
+          test "$status" -ne 0
+          observed="$(sha256sum /var/lib/rheknel-protected/result.bin | awk '{print $1}')"
+          test "$observed" = "2f58779ddbbaf9113f455bc6145e9914a6c3c5bd4009c3ada730403425a47eac"
+          echo "wrong_payload=REJECTED status=$status post_state_sha256=$observed"
